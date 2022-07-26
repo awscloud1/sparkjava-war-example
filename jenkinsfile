@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+    tools {
+        maven 'Maven_Local'
+    }
+    stages {
+        stage('Git Clone') { 
+            steps {
+                git credentialsId: 'private_key', url: 'https://github.com/awscloud1/sparkjava-war-example.git' 
+            }
+        }
+        stage('maven package build') { 
+            steps {
+                sh "./mvnw package"
+            }
+        }
+        stage('Deploy') { 
+            steps {
+               deploy adapters: [tomcat9(credentialsId: 'tomcat-id', path: '', url: 'http://172.31.84.51:8080/')], contextPath: 'hello-word', war: '**/*.war'
+            }
+        }
+    }
+}
